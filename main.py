@@ -29,20 +29,24 @@ def combine_tracks(video_file, audio_file, out_file, fps=25):
     out.close()
 
 
+# initialize parser and set arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("url", help="URL of the video you want to download")
 parser.add_argument("-a", action="store_true", help="Only download the audio")
 
+# get arguments
 args = parser.parse_args()
 
-yt_url = args.url.strip()
+yt_url = args.url
 audio_only = args.a
 
 if not youtube_url_validation(yt_url):
     print("Please, provide a valid YouTube URL.")
     sys.exit()
 
+# get yt link info
 yt = YouTube(yt_url)
+
 audio_track = yt.streams.filter(only_audio=True, file_extension='mp4').order_by('bitrate')[-1]
 
 if audio_only:
@@ -56,6 +60,7 @@ else:
 
     combine_tracks("video.mp4", "audio.mp4", title + ".mp4")
 
+    # delete redundant video and audio tracks
     os.remove("video.mp4")
     os.remove("audio.mp4")
 
