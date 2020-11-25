@@ -11,4 +11,4 @@ pip install numpy==1.19.3
 
 ## Usage
 
-`python main.py`
+`python main.py url`
