@@ -1,12 +1,12 @@
 # ytdownloader
 A simple YouTube downloader written in Python
 
-Installation
+## Installation
 
 python -m pip install git+https://github.com/nficano/pytube
 pip install moviepy
 pip install numpy==1.19.3
 
-Usage
+## Usage
 
 python main.py
