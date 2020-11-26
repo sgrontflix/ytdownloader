@@ -8,7 +8,7 @@ from moviepy import editor as mpe
 
 def youtube_url_validation(url):
     """
-    Check whether the url passed is a valid YouTube URL or not
+    Check whether the URL passed is a valid YouTube URL or not
 
     :param url: URL to be validated
     :return: true if the URL given is a valid YouTube URL, false if it is not
@@ -25,7 +25,7 @@ def youtube_url_validation(url):
 
 def combine_tracks(video_file, audio_file, out_file, fps=25):
     """
-    Combine video and audio track into one file
+    Combine video and audio tracks into one file
 
     :param video_file: path to video track
     :param audio_file: path to audio track
