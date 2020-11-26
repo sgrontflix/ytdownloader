@@ -10,7 +10,7 @@ pip install numpy==1.19.3
 git clone https://github.com/sgrontflix/ytdownloader
 ```
 
-## For Windows users
+### For Windows users
 
 Make sure to install [Python](https://www.python.org/downloads/) and [Git](https://gitforwindows.org/) before executing the commands above.
 
