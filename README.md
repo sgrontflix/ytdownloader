@@ -1,5 +1,5 @@
 # ytdownloader
-A simple YouTube downloader written in Python
+A simple YouTube downloader written in Python.
 
 ## Installation
 
