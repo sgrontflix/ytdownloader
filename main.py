@@ -44,6 +44,20 @@ def combine_tracks(video_file, audio_file, out_file, fps=25):
     out.close()
 
 
+def sanitize_string(string):
+    """
+    Replaces all Windows illegal characters with ''
+
+    :param string: string to be sanitized
+    :return: sanitized string
+    """
+    chars = '\\/:*?"<>|'
+    for c in chars:
+        string = string.replace(c, '')
+
+    return string
+
+
 # initialize parser and set arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("url", help="URL of the video you want to download")
@@ -68,7 +82,8 @@ if audio_only:
     audio_track.download()
 else:
     video_track = yt.streams.filter(progressive=False, file_extension='mp4').order_by('resolution')[-1]
-    title = video_track.title.replace('"', '')
+    # remove all illegal characters from the title
+    title = sanitize_string(video_track.title)
 
     video_track.download(filename="video")
     audio_track.download(filename="audio")
