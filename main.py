@@ -98,6 +98,7 @@ audio_track = yt.streams.filter(only_audio=True, file_extension='mp4').order_by(
 if audio_only:
     print_status('Downloading audio track...')
     audio_track.download()
+    print_good('Audio track successfully downloaded.')
 else:
     video_track = yt.streams.filter(progressive=False, file_extension='mp4').order_by('resolution')[-1]
     # remove all forbidden characters from the title so the script doesn't crash
