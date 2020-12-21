@@ -101,7 +101,7 @@ else:
         output = subprocess.check_output(f'{merge_command} \"{title}.mp4\"')
         print_good(f'Tracks successfully merged into \"{title}.mp4\".')
     except subprocess.CalledProcessError:
-        print_error(f'Couldn\'t merge tracks. Error code: {subprocess.CalledProcessError.returncode}. Skipping...')
+        print_error(f'Couldn\'t merge tracks. Error code: {subprocess.CalledProcessError.returncode}.')
 
     # delete redundant video and audio tracks
     print_status('Deleting redundant audio and video tracks...')
