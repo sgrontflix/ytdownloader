@@ -8,7 +8,7 @@ from pytube import YouTube
 
 def youtube_url_validation(url):
     """
-    Check whether the URL passed is a valid YouTube URL or not
+    Checks whether the URL passed is a valid YouTube URL or not
 
     :param url: URL to be validated
     :return: true if the URL given is a valid YouTube URL, false if it is not
@@ -33,6 +33,21 @@ def sanitize_string(string):
         string = string.replace(c, '')
 
     return string
+
+
+def remove_files(files):
+    """
+    Removes all files inside the list passed as argument
+
+    :param files: list containing files to remove
+    :return: None
+    """
+    for file in files:
+        try:
+            os.remove(file)
+        except OSError:
+            print_error(f'Couldn\'t delete {file}. Aborting script...')
+            sys.exit(1)
 
 
 # initialize parser and set arguments
@@ -81,7 +96,7 @@ yt = YouTube(yt_url)
 audio_track = yt.streams.filter(only_audio=True, file_extension='mp4').order_by('bitrate')[-1]
 
 if audio_only:
-    print_status('Downloading audio file...')
+    print_status('Downloading audio track...')
     audio_track.download()
 else:
     video_track = yt.streams.filter(progressive=False, file_extension='mp4').order_by('resolution')[-1]
@@ -96,7 +111,7 @@ else:
     audio_track.download(filename='audio')
     print_good('audio.mp4 successfully downloaded.')
 
-    print_status('Merging files...')
+    print_status('Merging tracks...')
     try:
         output = subprocess.check_output(f'{merge_command} \"{title}.mp4\"')
         print_good(f'Tracks successfully merged into \"{title}.mp4\".')
@@ -105,17 +120,7 @@ else:
 
     # delete redundant video and audio tracks
     print_status('Deleting redundant audio and video tracks...')
-    try:
-        os.remove('video.mp4')
-    except OSError:
-        print_error('Couldn\'t delete video.mp4. Aborting script...')
-        sys.exit(1)
-
-    try:
-        os.remove('audio.mp4')
-    except OSError:
-        print_error('Couldn\'t delete audio.mp4. Aborting script...')
-        sys.exit(1)
+    remove_files(['video.mp4', 'audio.mp4'])
     print_good('Tracks successfully deleted.')
 
 print_status("Finished processing file. Exiting script...")
