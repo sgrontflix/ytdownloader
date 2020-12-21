@@ -87,7 +87,7 @@ merge_command = ffmpeg_path + (enable_gpu if gpu else '') + (disable_verbose if 
                                                                                                        ' -c:a copy'
 
 if not youtube_url_validation(yt_url):
-    print_error("Please, provide a valid YouTube URL.")
+    print_error('Invalid URL detected, aborting script...')
     sys.exit(1)
 
 # get yt link info
