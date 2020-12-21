@@ -1,9 +1,9 @@
 import sys
 import os
+import subprocess
 import re
 import argparse
 from pytube import YouTube
-from moviepy import editor as mpe
 
 
 def youtube_url_validation(url):
@@ -19,27 +19,6 @@ def youtube_url_validation(url):
     youtube_regex_match = re.match(youtube_regex, url)
 
     return youtube_regex_match
-
-
-def combine_tracks(video_file, audio_file, out_file, fps=25):
-    """
-    Combine video and audio tracks into one file
-
-    :param video_file: path to video track
-    :param audio_file: path to audio track
-    :param out_file: path to merged file
-    :param fps: fps of the video
-    :return: None
-    """
-    video = mpe.VideoFileClip(video_file)
-    audio = mpe.AudioFileClip(audio_file)
-    out = video.set_audio(audio)
-    out.write_videofile(out_file, fps=fps)
-
-    # close readers to avoid PermissionError: [WinError 32] when deleting temporary files
-    video.close()
-    audio.close()
-    out.close()
 
 
 def sanitize_string(string):
@@ -58,18 +37,43 @@ def sanitize_string(string):
 
 # initialize parser and set arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("url", help="URL of the video you want to download")
-parser.add_argument("-a", action="store_true", help="Only download the audio")
+parser.add_argument('ffmpeg_path', help='Path to FFmpeg executable')
+parser.add_argument('url', help='URL of the video you want to download')
+parser.add_argument('-a', '--audio', action='store_true', help='Only download the audio')
+parser.add_argument('-g', '--gpu', action='store_true', help='Use GPU to merge audio and video tracks (recommended if '
+                                                             'you have an NVIDIA GPU)')
+parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose output')
 
 # get arguments
 args = parser.parse_args()
 
+ffmpeg_path = args.ffmpeg_path
 yt_url = args.url
-audio_only = args.a
+audio_only = args.audio
+gpu = args.gpu
+verbose = args.verbose
+
+
+# these functions will print the passed string if verbose=true or do nothing otherwise
+def print_status(string): print('[*] ' + string) if verbose else lambda *a, **k: None
+
+
+def print_error(string): print('[-] ' + string) if verbose else lambda *a, **k: None
+
+
+def print_good(string): print('[+] ' + string) if verbose else lambda *a, **k: None
+
+
+disable_verbose = ' -hide_banner -loglevel panic'
+enable_gpu = ' -hwaccel cuda -hwaccel_output_format cuda'
+merge_command = ffmpeg_path + (enable_gpu if gpu else '') + (disable_verbose if not verbose else '') + ' -i video.mp4' \
+                                                                                                       ' -i audio.mp4' \
+                                                                                                       ' -c:v copy' \
+                                                                                                       ' -c:a copy'
 
 if not youtube_url_validation(yt_url):
-    print("Please, provide a valid YouTube URL.")
-    sys.exit()
+    print_error("Please, provide a valid YouTube URL.")
+    sys.exit(1)
 
 # get yt link info
 yt = YouTube(yt_url)
@@ -77,19 +81,41 @@ yt = YouTube(yt_url)
 audio_track = yt.streams.filter(only_audio=True, file_extension='mp4').order_by('bitrate')[-1]
 
 if audio_only:
+    print_status('Downloading audio file...')
     audio_track.download()
 else:
     video_track = yt.streams.filter(progressive=False, file_extension='mp4').order_by('resolution')[-1]
     # remove all forbidden characters from the title so the script doesn't crash
     title = sanitize_string(video_track.title)
 
-    video_track.download(filename="video")
-    audio_track.download(filename="audio")
+    print_status('Downloading video.mp4...')
+    video_track.download(filename='video')
+    print_good('video.mp4 successfully downloaded.')
 
-    combine_tracks("video.mp4", "audio.mp4", title + ".mp4")
+    print_status('Downloading audio.mp4...')
+    audio_track.download(filename='audio')
+    print_good('audio.mp4 successfully downloaded.')
+
+    print_status('Merging files...')
+    try:
+        output = subprocess.check_output(f'{merge_command} \"{title}.mp4\"')
+        print_good(f'Tracks successfully merged into \"{title}.mp4\".')
+    except subprocess.CalledProcessError:
+        print_error(f'Couldn\'t merge tracks. Error code: {subprocess.CalledProcessError.returncode}. Skipping...')
 
     # delete redundant video and audio tracks
-    os.remove("video.mp4")
-    os.remove("audio.mp4")
+    print_status('Deleting redundant audio and video tracks...')
+    try:
+        os.remove('video.mp4')
+    except OSError:
+        print_error('Couldn\'t delete video.mp4. Aborting script...')
+        sys.exit(1)
 
-print("File successfully downloaded.")
+    try:
+        os.remove('audio.mp4')
+    except OSError:
+        print_error('Couldn\'t delete audio.mp4. Aborting script...')
+        sys.exit(1)
+    print_good('Tracks successfully deleted.')
+
+print_status("Finished processing file. Exiting script...")
