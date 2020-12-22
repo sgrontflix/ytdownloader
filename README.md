@@ -10,6 +10,13 @@ python -m pip install git+https://github.com/nficano/pytube
 git clone https://github.com/sgrontflix/ytdownloader
 ```
 
+or 
+
+```
+python3 -m pip install git+https://github.com/nficano/pytube
+git clone https://github.com/sgrontflix/ytdownloader
+```
+
 ### For Windows users
 
 Make sure to install [Python](https://www.python.org/downloads/) and [Git](https://gitforwindows.org/) before executing the commands above.
