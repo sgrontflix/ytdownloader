@@ -28,3 +28,7 @@ You can leave everything on default when installing Git.
 ## Usage
 
 `python main.py ffmpeg_path url`
+
+or
+
+`python3 main.py ffmpeg_path url`
