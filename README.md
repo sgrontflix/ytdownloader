@@ -4,7 +4,7 @@ A simple YouTube downloader written in Python.
 
 ## Installation
 
-Get [FFmpeg](https://ffmpeg.org/download.html) and run the following commands:
+Run the following commands:
 
 ```
 python -m pip install git+https://github.com/nficano/pytube
@@ -18,9 +18,11 @@ python3 -m pip install git+https://github.com/nficano/pytube
 git clone https://github.com/sgrontflix/ytdownloader
 ```
 
+And get [FFmpeg](https://ffmpeg.org/download.html).
+
 ### For Windows users
 
-Make sure to install [Python](https://www.python.org/downloads/) and [Git](https://gitforwindows.org/) before downloading FFmpeg and executing the commands above.
+Make sure to install [Python](https://www.python.org/downloads/) and [Git](https://gitforwindows.org/) before executing the commands above and downloading FFmpeg.
 
 Check `Add Python to environment variables` in `Advanced Options` when installing Python.
 
