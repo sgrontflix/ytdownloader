@@ -114,7 +114,7 @@ else:
 
     print_status('Merging tracks...')
     try:
-        output = subprocess.check_output(f'{merge_command} \"{title}.mp4\"')
+        output = subprocess.check_output(f'{merge_command} \"{title}.mp4\"', shell=True)
         print_good(f'Tracks successfully merged into \"{title}.mp4\".')
     except subprocess.CalledProcessError:
         print_error(f'Couldn\'t merge tracks. Error code: {subprocess.CalledProcessError.returncode}.')
