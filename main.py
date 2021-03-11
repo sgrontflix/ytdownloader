@@ -23,16 +23,21 @@ def youtube_url_validation(url):
 
 def sanitize_string(string):
     """
-    Replaces all forbidden characters with ''
+    Replaces all forbidden characters with '' and removes unnecessary whitespaces
+    If the string is empty, the returned string will be 'Title'
 
     :param string: string to be sanitized
     :return: sanitized string
     """
-    chars = '\\/:*?"<>|'
-    for c in chars:
-        string = string.replace(c, '')
+    chars = ['\\', '/', ':', '*', '?', '"', '<', '>', '|']
+    string = string.translate({ord(x): '' for x in chars})
 
-    return string
+    string = string.strip()
+
+    if not string:
+        return 'Title'
+    else:
+        return string
 
 
 def remove_files(files):
