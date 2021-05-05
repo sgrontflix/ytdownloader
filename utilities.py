@@ -4,7 +4,7 @@ import re
 
 def youtube_url_validation(url):
     """
-    Checks whether the URL passed is a valid YouTube URL or not
+    Checks whether the given URL is a valid YouTube URL or not
 
     :param url: URL to be validated
     :return: true if the URL given is a valid YouTube URL, false if it is not
