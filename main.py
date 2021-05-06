@@ -37,8 +37,8 @@ if __name__ == '__main__':
 
     disable_verbose = ' -hide_banner -loglevel panic'
     enable_gpu = ' -hwaccel cuda -hwaccel_output_format cuda'
-    merge_command = ffmpeg_path + ' -y' + (enable_gpu if gpu else '') + (disable_verbose if not verbose else '') + \
-        ' -i video.mp4 -i audio.mp4 -c:v copy -c:a copy'
+    merge_command = '\"' + ffmpeg_path + '\" -y' + (enable_gpu if gpu else '') + \
+                    (disable_verbose if not verbose else '') + ' -i video.mp4 -i audio.mp4 -c:v copy -c:a copy'
 
     if not youtube_url_validation(yt_url):
         print_error('Invalid URL detected, aborting script...')
