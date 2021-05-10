@@ -41,12 +41,12 @@ def remove_files(files):
     Removes all files inside the list passed as argument
 
     :param files: list containing files to remove
-    :return: 0 if all files are successfully deleted, 1 if they're not
+    :return: True if all files are successfully deleted, False if they're not
     """
     for file in files:
         try:
             os.remove(file)
         except OSError:
-            return 1
+            return False
 
-    return 0
+    return True
