@@ -44,8 +44,7 @@ if __name__ == '__main__':
         print_error('Invalid URL detected, aborting script...')
         sys.exit(1)
 
-    ffmpeg_executable = Path(ffmpeg_path)
-    if not ffmpeg_executable.is_file():
+    if not Path(ffmpeg_path.get()).is_file():
         print_error('Invalid path detected, aborting script...')
         sys.exit(1)
 
@@ -54,17 +53,27 @@ if __name__ == '__main__':
 
     audio_track = yt.streams.filter(only_audio=True, file_extension='mp4').order_by('bitrate')[-1]
 
+    # remove all forbidden characters from the title so the script doesn't crash
+    title = sanitize_string(audio_track.title)
+
     if audio_only:
         print_status('Downloading audio track...')
-        audio_path = audio_track.download()
+        audio_path = audio_track.download(filename=title)
         if audio_track.exists_at_path(audio_path):
-            print_good('Audio track successfully downloaded.')
+            print_good(f'{title}.mp4 successfully downloaded.')
         else:
             print_error('Couldn\'t download audio track.')
+
+            if Path(audio_path).is_file():
+                print_status('Cleaning up...')
+                result = remove_files([f'{title}.mp4'])
+                # a list is False if empty, True if not
+                if not result:
+                    print_good(f'{title}.mp4 deleted.')
+                else:
+                    print_error(f'Couldn\'t delete {title}.mp4.')
     else:
         video_track = yt.streams.filter(progressive=False, file_extension='mp4').order_by('resolution')[-1]
-        # remove all forbidden characters from the title so the script doesn't crash
-        title = sanitize_string(video_track.title)
 
         print_status('Downloading video.mp4...')
         video_path = video_track.download(filename='video')
@@ -72,6 +81,15 @@ if __name__ == '__main__':
             print_good('video.mp4 successfully downloaded.')
         else:
             print_error('Couldn\'t download video.mp4.')
+
+            if Path(video_path).is_file():
+                print_status('Cleaning up...')
+                result = remove_files(['video.mp4'])
+                if not result:
+                    print_good('video.mp4 deleted.')
+                else:
+                    print_error('Couldn\'t delete video.mp4.')
+
             sys.exit(1)
 
         print_status('Downloading audio.mp4...')
@@ -80,6 +98,21 @@ if __name__ == '__main__':
             print_good('audio.mp4 successfully downloaded.')
         else:
             print_error('Couldn\'t download audio.mp4.')
+
+            print_status('Cleaning up...')
+            result = remove_files(['video.mp4'])
+            if not result:
+                print_good('video.mp4 deleted.')
+            else:
+                print_error('Couldn\'t delete video.mp4.')
+
+            if Path(audio_path).is_file():
+                result = remove_files(['audio.mp4'])
+                if not result:
+                    print_good('audio.mp4 deleted.')
+                else:
+                    print_error('Couldn\'t delete audio.mp4.')
+
             sys.exit(1)
 
         print_status('Merging tracks...')
@@ -92,7 +125,7 @@ if __name__ == '__main__':
         # delete redundant video and audio tracks
         print_status('Deleting redundant audio and video tracks...')
         result = remove_files(['video.mp4', 'audio.mp4'])
-        if result:
+        if not result:
             print_good('Tracks successfully deleted.')
         else:
-            print_error(f'Couldn\'t delete one or more tracks.')
+            print_error('Couldn\'t delete the following track(s): ' + ', '.join([str(track) for track in result]) + '.')
