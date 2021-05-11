@@ -11,6 +11,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('ffmpeg_path', help='Path to FFmpeg executable')
     parser.add_argument('url', help='URL of the video you want to download')
+    parser.add_argument('-r', '--resolution', default='2160p', help='Preferred resolution '
+                                                                    'of the video you want to download')
     parser.add_argument('-a', '--audio', action='store_true', help='Only download the audio')
     parser.add_argument('-g', '--gpu', action='store_true', help='Use GPU to merge audio and video tracks '
                                                                  '(recommended if you have an NVIDIA GPU)')
@@ -21,6 +23,7 @@ if __name__ == '__main__':
 
     ffmpeg_path = args.ffmpeg_path
     yt_url = args.url
+    resolution = args.resolution
     audio_only = args.audio
     gpu = args.gpu
     verbose = args.verbose
@@ -44,7 +47,7 @@ if __name__ == '__main__':
         print_error('Invalid URL detected, aborting script...')
         sys.exit(1)
 
-    if not Path(ffmpeg_path.get()).is_file():
+    if not Path(ffmpeg_path).is_file():
         print_error('Invalid path detected, aborting script...')
         sys.exit(1)
 
@@ -73,7 +76,22 @@ if __name__ == '__main__':
                 else:
                     print_error(f'Couldn\'t delete {title}.mp4.')
     else:
-        video_track = yt.streams.filter(progressive=False, file_extension='mp4').order_by('resolution')[-1]
+        resolution_list = ['2160p', '1440p', '1080p', '720p', '480p', '360p', '240p', '144p']
+
+        if resolution not in resolution_list:
+            print_error('Invalid resolution detected, aborting script...')
+            sys.exit(1)
+
+        video_track = \
+            yt.streams.filter(progressive=False, file_extension='mp4', resolution=resolution).order_by('fps')
+
+        # if at least a video track with the given resolution was found, select the best one (highest fps)
+        if video_track:
+            video_track = video_track[-1]
+        # otherwise select the video track with the highest possible resolution and fps
+        else:
+            video_track = \
+                yt.streams.filter(progressive=False, file_extension='mp4').order_by('resolution').order_by('fps')[-1]
 
         print_status('Downloading video.mp4...')
         video_path = video_track.download(filename='video')
