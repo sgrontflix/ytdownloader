@@ -53,6 +53,7 @@ def remove_files(files):
 
     return files
 
+
 def is_gpu_available():
     try:
         subprocess.check_output('nvidia-smi', shell=True)
