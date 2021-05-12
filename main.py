@@ -2,7 +2,6 @@ from utilities import *
 from pathlib import Path
 from pytube import YouTube
 import sys
-import subprocess
 import argparse
 
 
@@ -38,11 +37,6 @@ if __name__ == '__main__':
     def print_good(string): print('[+] ' + string) if verbose else lambda *a, **k: None
 
 
-    disable_verbose = ' -hide_banner -loglevel panic'
-    enable_gpu = ' -hwaccel cuda -hwaccel_output_format cuda'
-    merge_command = '\"' + ffmpeg_path + '\" -y' + (enable_gpu if gpu else '') + \
-                    (disable_verbose if not verbose else '') + ' -i video.mp4 -i audio.mp4 -c:v copy -c:a copy'
-
     if not youtube_url_validation(yt_url):
         print_error('Invalid URL detected, aborting script...')
         sys.exit(1)
@@ -76,6 +70,16 @@ if __name__ == '__main__':
                 else:
                     print_error(f'Couldn\'t delete {title}.mp4.')
     else:
+        if gpu and not is_gpu_available():
+            print_error('Couldn\'t find any NVIDIA GPU installed.')
+            print_status('Tracks will be merged using the CPU.')
+            gpu = False
+
+        disable_verbose = ' -hide_banner -loglevel panic'
+        enable_gpu = ' -hwaccel cuda -hwaccel_output_format cuda'
+        merge_command = '\"' + ffmpeg_path + '\" -y' + (enable_gpu if gpu else '') + \
+                        (disable_verbose if not verbose else '') + ' -i video.mp4 -i audio.mp4 -c:v copy -c:a copy'
+
         resolution_list = ['2160p', '1440p', '1080p', '720p', '480p', '360p', '240p', '144p']
 
         if resolution not in resolution_list:
