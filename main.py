@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     if audio_only:
         print_status('Downloading audio track...')
-        audio_path = audio_track.download(filename=title)
+        audio_path = audio_track.download(filename=f'{title}.mp4')
         if audio_track.exists_at_path(audio_path):
             print_good(f'{title}.mp4 successfully downloaded.')
         else:
@@ -100,7 +100,7 @@ if __name__ == '__main__':
                 yt.streams.filter(progressive=False, file_extension='mp4').order_by('resolution').order_by('fps')[-1]
 
         print_status('Downloading video.mp4...')
-        video_path = video_track.download(filename='video')
+        video_path = video_track.download(filename='video.mp4')
         if video_track.exists_at_path(video_path):
             print_good('video.mp4 successfully downloaded.')
         else:
@@ -117,7 +117,7 @@ if __name__ == '__main__':
             sys.exit(1)
 
         print_status('Downloading audio.mp4...')
-        audio_path = audio_track.download(filename='audio')
+        audio_path = audio_track.download(filename='audio.mp4')
         if audio_track.exists_at_path(audio_path):
             print_good('audio.mp4 successfully downloaded.')
         else:
