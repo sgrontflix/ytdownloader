@@ -1,6 +1,7 @@
 from utilities import *
 from pathlib import Path
 from pytube import YouTube
+from pytube.exceptions import VideoUnavailable
 import sys
 import argparse
 
@@ -47,6 +48,12 @@ if __name__ == '__main__':
 
     # get yt link info
     yt = YouTube(yt_url)
+
+    try:
+        yt.check_availability()
+    except VideoUnavailable:
+        print_error('Video is unavailable, aborting script...')
+        sys.exit(1)
 
     audio_track = yt.streams.filter(only_audio=True, file_extension='mp4').order_by('bitrate')[-1]
 
