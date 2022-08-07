@@ -40,11 +40,11 @@ After installing FFmpeg, run `whereis ffmpeg` to get the full installation path.
 
 ## Usage
 
-`python main.py [-h] [-r RESOLUTION] [-a] [-g] [-v] ffmpeg_path url`
+`python main.py [-h] [-r RESOLUTION] [-a] [-g] [-v] url [ffmpeg_path]`
 
 or
 
-`python3 main.py [-h] [-r RESOLUTION] [-a] [-g] [-v] ffmpeg_path url`
+`python3 main.py [-h] [-r RESOLUTION] [-a] [-g] [-v] url [ffmpeg_path]`
 
 ## Issues
 
