@@ -9,8 +9,8 @@ import argparse
 if __name__ == '__main__':
     # initialize parser and set arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('ffmpeg_path', help='Path to FFmpeg executable')
     parser.add_argument('url', help='URL of the video you want to download')
+    parser.add_argument('ffmpeg_path', help='Path to FFmpeg executable', nargs='?')
     parser.add_argument('-r', '--resolution', default='2160p', help='Preferred resolution '
                                                                     'of the video you want to download')
     parser.add_argument('-a', '--audio', action='store_true', help='Only download the audio')
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         print_error('Invalid URL detected, aborting script...')
         sys.exit(1)
 
-    if not Path(ffmpeg_path).is_file():
+    if not audio_only and (not ffmpeg_path or not Path(ffmpeg_path).is_file()):
         print_error('Invalid path detected, aborting script...')
         sys.exit(1)
 
